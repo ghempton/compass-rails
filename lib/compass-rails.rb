@@ -25,7 +25,7 @@ module CompassRails
       if rails31? || rails32? || rails4?
         require 'sass-rails'
         if rails4?
-          require 'sprockets-rails'
+          require 'sprockets/rails'
         else
           require 'sprockets/railtie'
         end
@@ -191,6 +191,9 @@ module CompassRails
       compass_config = app.config.compass
 
       sass_config.load_paths.concat(compass_config.sass_load_paths)
+      if CompassRails.rails4?
+        Sprockets::SassTemplate.compass_load_paths = compass_config.sass_load_paths
+      end
 
       { :output_style => :style,
         :line_comments => :line_comments,

@@ -70,7 +70,12 @@ class Rails::Railtie::Configuration
           target        = File.join(Rails.public_path, Rails.application.config.assets.prefix, asset.digest_path)
 
           # Adds the asset to the manifest file.
-          Sprockets::StaticCompiler.generated_sprites[logical_path.to_s] = asset.digest_path
+          if CompassRails.rails4?
+            require 'pry'
+            binding.pry
+          else
+            Sprockets::StaticCompiler.generated_sprites[logical_path.to_s] = asset.digest_path
+          end
 
           # Adds the fingerprinted asset to the public directory
           FileUtils.mkdir_p File.dirname(target)
@@ -87,7 +92,7 @@ end
 module CompassRails
   class Railtie < Rails::Railtie
 
-    initializer "compass.initialize_rails", :group => :all do |app|
+    initializer "compass.initialize_rails", :before => :append_assets_path, :group => :all do |app|
       require 'compass-rails/patches/3_1'
       # Configure compass for use within rails, and provide the project configuration
       # that came via the rails boot process.
